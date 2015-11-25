@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.logging.Log;
+			import mx.logging.ILogger;
+			import mx.rpc.IResponder;
+			import mx.rpc.AsyncToken;
+			import mx.rpc.remoting.RemoteObject;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			private var logger:ILogger = Log.getLogger("Application");
+			
+			[Bindable]
+			public var persons:ArrayCollection;
+			
+			private function callRemoteObject():void
+			{
+				
+				logger.info("Callin my remote object methods");
+				var myRO:RemoteObject = new RemoteObject();
+				myRO.destination = "personService";
+				myRO.addEventListener(ResultEvent.RESULT, resultHandler);
+				myRO.addEventListener(FaultEvent.FAULT, faultHandler);
+				myRO.getAllPersons();
+			}
+			
+			private function resultHandler(event:ResultEvent):void
+			{
+				logger.info("Callin my remote object methods");
+				persons = event.result as ArrayCollection;
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Fault : "+event.fault.faultString);
+			}
+			
+			
+		]]>
+	</mx:Script>
+
+	<!-- <mx:RemoteObject id="myRO" destination="personService"> <mx:method 
+		name="getAllPersons" result="resultHandler(event)" fault="faultHandler(event)"/> 
+		</mx:RemoteObject> -->
+	<mx:DataGrid dataProvider="{persons}" />
+	<mx:Button label="Get All Persons" click="callRemoteObject()" />
+</mx:Application>

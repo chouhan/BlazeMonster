@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" creationComplete="consumer.subscribe()">
+	<mx:Script>
+		<![CDATA[
+			import mx.messaging.events.MessageEvent;
+			import mx.messaging.messages.AsyncMessage;
+			
+			private function sendChatMessage():void
+			{
+				var msg:AsyncMessage = new AsyncMessage();
+				msg.body = chatMessage.text;
+				producer.send(msg);
+				chatMessage.text = "";
+			}
+			
+			private function messageHandler(event:MessageEvent):void
+			{
+				chatLog.text += event.message.body+"\n"	;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Producer id="producer" destination="chatting" />
+	<mx:Consumer id="consumer" destination="chatting"
+		message="messageHandler(event)" />
+
+	<mx:TextInput id="chatMessage" />
+	<mx:Button label="Send" click="sendChatMessage()" />
+	<mx:TextArea id="chatLog" />
+</mx:Application>
